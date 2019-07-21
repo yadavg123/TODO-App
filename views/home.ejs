@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TODO APP</title>
+    <link href="https://fonts.googleapis.com/css?family=Nova+Square&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fresca&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/home.css">
+    <script src="https://kit.fontawesome.com/7c6b397831.js"></script>
+</head>
+
+<body>
+    <!-- MAIN DIV STARTED -->
+    <div class="outer">
+        <!-- HEADING -->
+        <h1>TODO App</h1>
+
+        <!-- FORM TO SUBMIT -->
+        <form onsubmit="readOutLoud('successfully added');" action="/addTask" method="POST">
+
+            <!-- WHAT TO DO -->
+            <div class="top-div">
+                <h4>DESCRIPTION</h4>
+                <input type="text" name="description" placeholder="What do you need to do?" required>
+            </div>
+
+            <!-- CATEGORY DIV -->
+            <div class="divider">
+                <div class="top-div">
+                    <h4>CATEGORY</h4>
+                    <select name="selectpicker">
+                        <option id="disabled" value="Choose a category" disabled>Choose a category</option>
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="school">School</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="others">Others</option>
+                    </select>
+                    <i style="position: absolute;top:25%;right:6%;font-size: 22px;" class="fas fa-sort-down"></i>
+                </div>
+
+                <!-- WHEN TO DO -->
+                <div class="top-div" id="border-left">
+                    <h4>DUE DATE</h4>
+                    <input id="datefield" type="date" name="duedate" required>
+                </div>
+            </div>
+
+            <!-- ADD AND DELETE BUTTONS -->
+            <div class="middle-div top-div ">
+                <button class="btn"><i class="icon fas fa-plus"></i> &nbsp; ADD TASK</button>
+                <button class="a" id="delete" type="submit" form="myForm"><i class="icon far fa-trash-alt"></i> &nbsp;
+                    DELETE
+                    TASKS</button>
+            </div>
+        </form>
+        <br>
+        <!-- TASK ALREADY ADDED -->
+        <form id="myForm" onsubmit="return validateMyForm();" action="/delete" method="POST" class="lower">
+            <% var c=0; %>
+            <% for(let i of arr){ %>
+                <!-- EACH TASK WITH THEIR DESCRIPTION -->
+            <div class="lower-item">
+                <div class="check">
+                    <input class="checkbxinput" type="checkbox" name="<%= c++ %>" value="<%= i.id %>">
+                </div>
+                <div class="desc">
+                    <div  class="desc1">
+                        <h3><%= i.description %></h3>
+                        <%
+                            const s=i.date;
+                            var str="";
+                            var month=Number(s[5]+s[6]);
+                            var day=Number(s[8]+s[9]);
+                            switch(month){
+                                case 1:
+                                    str+="JAN";
+                                    break;
+                                case 2:
+                                    str+="FEB";
+                                    break;
+                                case 3:
+                                    str+="MAR";
+                                    break;
+                                case 4:
+                                    str+="APR";
+                                    break;
+                                case 5:
+                                    str+="MAY";
+                                    break;
+                                case 6:
+                                    str+="JUN";
+                                    break;
+                                case 7:
+                                    str+="JUL";
+                                    break;
+                                case 8:
+                                    str+="AUG";
+                                    break;
+                                case 9:
+                                    str+="SEP";
+                                    break;
+                                case 10:
+                                    str+="OCT";
+                                    break;
+                                case 11:
+                                    str+="NOV";
+                                    break;
+                                case 12:
+                                    str+="DEC";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            str+=" ";
+                            str+=day+", ";
+                            str+=s[0]+s[1]+s[2]+s[3];
+                        %>
+                        <span><i class="fas fa-calendar-alt">&nbsp;&nbsp;</i> <%= str %></span>
+                    </div>
+                    <%
+                    var t = new Date();
+                    var d = t.getDate();
+                    var m = t.getMonth() + 1; //January is 0!
+                    var y = t.getFullYear();
+                    if (d < 10) {
+                        d = '0' + d;
+                    }
+                    if (m < 10) {
+                        m = '0' + m;
+                    }
+                    
+                    t = y + '-' + m + '-' + d;
+                    var y1=Number(y);
+                    var y2=Number(s[0]+s[1]+s[2]+s[3]);
+                    var m1=Number(m);
+                    var m2=Number(s[5]+s[6]);
+                    var d1=Number(d);
+                    var d2=Number(s[8]+s[9]);
+                    if(y1>y2){
+                        //code
+                    }
+                    else if(y1==y2){
+                        if(m1>m2){
+                            //code
+                        }
+                        else if(m1==m2){
+                            if(d1>d2){ %>
+                                <!-- INCASE THE DEADLINE PASSED -->
+                                <div class="desc2">
+                                    <h3 style="color:red;">Deadline passed! Postpone it or Delete</h3>
+                                </div>
+                                <div class="desc3">
+                                    <input form="postponeForm" class="postpone" type="date" id="datefield2" required>
+                                    <a style="background-color: #17a2b8;width:90px;" class="postpone-btn" id="postpone" onclick="return postpone()" href="/postpone?id=<%= i.id %>">POSTPONED</a>
+                                    <a onclick="readOutLoud('Deleted!')" style="background-color: red;width:60px;" class="postpone-btn" href="/remove?id=<%=i.id%>">DELETE</a>
+                                </div>
+                                
+                            <%
+                            }
+                            else if(d1==d2){ %>
+                                <!-- INCASE TODAY IS THE DEADLINE -->
+                                <div id="deadline">Hurry Up!</div>
+                            <%
+                            }
+                        }
+                    }
+                %>
+                </div>
+                <!-- category -->
+                <div class="type">
+                    <%  var str=i.category;
+                        var x;
+                        switch(i.category){
+                            case "work":
+                                x="#dc3545";
+                                break;
+                            case "personal":
+                                x="#007bff";
+                                break;
+                            case "school":
+                                x="#28a745";
+                                break;
+                            case "cleaning":
+                                x="#ffc107";
+                                break;
+                            default:
+                                x="#6c757d";
+                        }
+                    %>
+                    <div style="background-color: <%= x %>;"><%= str.toUpperCase(); %></div>
+                </div>
+            </div>
+            <% } %>
+        </form>
+    </div>
+    <script src="/js/home.js"></script>
+</body>
+
+</html>
